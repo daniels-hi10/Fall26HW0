@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using TMPro;
 using Unity.VisualScripting;
 
@@ -15,7 +16,7 @@ public class Player : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Speed = 50;
+        Speed = 35;
         Score = 0;
         Life = 21;
         scoreText.text = "Score: " + Score;
@@ -27,19 +28,19 @@ public class Player : MonoBehaviour
     {
         Vector2 vel = new Vector2(0, 0);
 
-        if (Keyboard.current.leftArrowKey.ReadValue() > 0) 
+        if (Keyboard.current.leftArrowKey.ReadValue() > 0) // going left
         {
             vel.x -= Speed;
         }
-        if (Keyboard.current.rightArrowKey.ReadValue() > 0)
+        if (Keyboard.current.rightArrowKey.ReadValue() > 0) // going right
         {
             vel.x += Speed;
         }
-        if (Keyboard.current.upArrowKey.ReadValue() > 0)
+        if (Keyboard.current.upArrowKey.ReadValue() > 0) // going up
         {
             vel.y += Speed;
         }
-        if (Keyboard.current.downArrowKey.ReadValue() > 0)
+        if (Keyboard.current.downArrowKey.ReadValue() > 0) // going down
         {
             vel.y -= Speed;
         }
@@ -50,15 +51,15 @@ public class Player : MonoBehaviour
 
         Life -= Time.deltaTime;
         lifeTimer.text = "" + (int)Life;
-        if (Life <= 1)
+        if (Life <= 1) // if timer reaches 0, despawns and game over
         {
-            Destroy(gameObject);
+            Despawn();
         }
     }
     
     private void OnCollisionEnter2D(Collision2D other)
     {
-        Coin coin = other.gameObject.GetComponent<Coin>();
+        Coin coin = other.gameObject.GetComponent<Coin>(); // +1 point upon collecting
         if (coin != null)
         {
             coin.GetBumped();
@@ -66,7 +67,7 @@ public class Player : MonoBehaviour
             UpScore();
         }
 
-        Anticoin anticoin = other.gameObject.GetComponent<Anticoin>();
+        Anticoin anticoin = other.gameObject.GetComponent<Anticoin>(); // -1 point upon collecting
         if (anticoin != null)
         {
             anticoin.GetBumped();
@@ -75,8 +76,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    void UpScore()
+    void UpScore() // score tracker
     {
         scoreText.text = "Score: " + Score;
+    }
+
+    void Despawn() // game over
+    {
+        SceneManager.LoadScene("GameOver");
+        Destroy(gameObject);
     }
 }
